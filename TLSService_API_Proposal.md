@@ -237,5 +237,7 @@ So it makes sense for us not to use Streams and instead use the SecureTransport 
 ## References
 
 1 - https://docs.oracle.com/javase/7/docs/api/javax/net/ssl/SSLEngine.html
+
 2 - https://developer.apple.com/reference/foundation/nsstream
+
 3 - https://web.archive.org/web/20150202200348/http://www.objectmentor.com/resources/articles/srp.pdf
