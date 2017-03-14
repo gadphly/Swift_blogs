@@ -204,7 +204,7 @@ This will be called when data is to be read from a socket. Encrypted data is rea
 This proposal:
 
 - DOES NOT describe the TLS service configuration, which includes information on certificate types, formats and chains, cipher suites, etc. We expect this to be specified in a future proposal.
-- DOES NOT describe the TLS service trust policies, which define trust and validation policies of the incoming connection. We expect this to be specifies in a future proposal.
+- DOES NOT describe the TLS service trust policies, which define trust and validation policies of the incoming connection. We expect this to be specified in a future proposal.
 - DOES NOT describe compatibility of the TLS service with non-Foundation based transport protocols on the Linux platform. It is possible to extend the current TLS service protocol to support other types of protocols in future proposals.
 
 
