@@ -54,7 +54,7 @@ If an application requires TLS for its use case, it creates a TLS service object
 
 The application then passes the TLS service object to its lower level frameworks that deal with networking and communication. Each lower level framework maintains an optional instance variable of type TLS service protocol. If the optional variable exists, it is further passed down until it gets to the lowest level that deals with the Swift transport layer APIs (in the diagram above, this is the HTTP Management layer). When this layer creates the connection using the transport layer APIs, it assigns the TLS service object to the transport layer delegate. The Swift socket layer is then responsible for calling the TLS service protocol methods that handle the TLS functionality at the appropriate times. 
 
-
+Note that in the diagram above, we abstract away the transport mechanism using transport management protocol. The definition for this protocol is out of the scope of this proposal and will be discussed in a separate, future proposal.
  
 <!--Additionally, in order for our TLS service layer to be agnostic of the specific system transport layer, we also define a simple _transport management protocol_ that has a file descriptor property. The transport management protocol is implemented by the transport management class which sets the property to the I/O connection reference (e.g., socket pointer). This handle is used by the TLS service for all connection functionality. -->
 
