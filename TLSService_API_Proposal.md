@@ -1,4 +1,4 @@
-# Security Service
+# TLS Service APIs
 
 ## Introduction
 
@@ -41,10 +41,11 @@ In our diagram we omit both the system level transport layer as well as the unde
 
 ### Design Description
 
-We define two sets of protocols for the TLS service APIs. 
+<!-- We define two sets of protocols for the TLS service APIs. 
 
 - TLS service protocol -  Defines delegate methods to handle TLS-level events on connections
 - Transport management protocol - Defines delegate methods to handle transport-level events
+-->
 
 _TLS service protocol_ defines a set of methods that  is implemented by TLS service and it interfaces with the transport management layer (for example, socket management).
 These methods are implemented by the TLS service which in turn uses its choice an of underlying security library. As an example, the TLS service uses SecurityTransport library on Apple platform and OpenSSL or alternatively LibreSSL on Linux. 
@@ -52,8 +53,10 @@ These methods are implemented by the TLS service which in turn uses its choice a
 If an application requires TLS for its use case, it creates a TLS service object and configures it based on its requirements. Note that the configuration of the TLS service is outside the scope of the current document.
 
 The application then passes the TLS service object to its lower level frameworks that deal with networking and communication. Each lower level framework maintains an optional instance variable of type TLS service protocol. If the optional variable exists, it is further passed down until it gets to the lowest level that deals with the Swift transport layer APIs (in the diagram above, this is the HTTP Management layer). When this layer creates the connection using the transport layer APIs, it assigns the TLS service object to the transport layer delegate. The Swift socket layer is then responsible for calling the TLS service protocol methods that handle the TLS functionality at the appropriate times. 
+
+
  
-Additionally, in order for our TLS service layer to be agnostic of the specific system transport layer, we also define a simple _transport management protocol_ that has a file descriptor property. The transport management protocol is implemented by the transport management class which sets the property to the I/O connection reference (e.g., socket pointer). This handle is used by the TLS service for all connection functionality. 
+<!--Additionally, in order for our TLS service layer to be agnostic of the specific system transport layer, we also define a simple _transport management protocol_ that has a file descriptor property. The transport management protocol is implemented by the transport management class which sets the property to the I/O connection reference (e.g., socket pointer). This handle is used by the TLS service for all connection functionality. -->
 
 
 
@@ -79,8 +82,8 @@ There are several benefits provided by this model:
 
 - The underlying Transport layer is responsible for supporting blocking and non-blocking connections as long as the underlying security library supports both types of connection.
 
-- The TLS service is agnostic of the underlying transport management layer and simply requires the transport layer to conform to the transport management protocol.
-
+<!-- - The TLS service is agnostic of the underlying transport management layer and simply requires the transport layer to conform to the transport management protocol.
+-->
 
 
 
@@ -91,7 +94,7 @@ There are a number of cases in low-level systems programming where similar funct
 The latter is an example of how OpenSSL differentiates between the server side or the client side of a TLS connection. In TLS, the client is the initiator of a TLS session; the server is the entity that accepts the requests for TLS sessions made by clients. Depending on the connection type (server or client), different actions and policies are supported such as cipher suite selection during a TLS handshake, request for handshake renegotiations and trust validation policies for server name and certificates.  
 
 
-Whilst using a flag or a type is convenient in languages such as `C`, it's not very `Swift`-like and does not adhere to the single responsibility principle [3] of object oriented paradigm. We recommend that different interfaces should be created that decouple the client and server concepts as far as the higher application layers are concerned. This is generalized approach that can be adopted by the other layers of the application stack. For example, the Transport layer can also decouple the interface of client and server connections.
+Whilst using a flag or a type is convenient in languages such as `C`, it's not very `Swift`-like and does not adhere to the single responsibility principle [1] of object oriented paradigm. We recommend that different interfaces should be created that decouple the client and server concepts as far as the higher application layers are concerned. This is generalized approach that can be adopted by the other layers of the application stack. For example, the Transport layer can also decouple the interface of client and server connections.
 
 
 
@@ -102,6 +105,7 @@ Whilst using a flag or a type is convenient in languages such as `C`, it's not v
 
 ## Detailed design
 
+<!--
 ### Transport management protocol
 
 The transport management protocol describes a gettable file descriptor property that refers to an I/O resource (such as a network socket).
@@ -117,7 +121,7 @@ public protocol TransportManagementDelegate {
   var fileDescriptor: Int32 { get }
 }
 ```
-
+-->
 
 ### TLS service protocol
 
@@ -176,12 +180,13 @@ This is both a client and server method.
 	/// Processing on acceptance from a listening socket
 	/// 
 	///
-	/// - Parameter connectionRef:	The connected I/O instance
+	/// - Parameter IORef:	The connected I/O instance
 	///
-	func onAccept(connectionRef: TransportManagementDelegate) throws
+	func onAccept(IORef: TransportManagementDelegate) throws
 	
 ```
 
+<!-- 	func onAccept(connectionRef: TransportManagementDelegate) throws -->
 ### onConnect
 This will be called once a socket connection has been made, to setup the TLS connection, do the handshake and connection verification. 
 
@@ -195,16 +200,14 @@ This is both a client and server method.
  	///
 	/// - Parameter connectionRef:	The connected I/O instance
 	///
-	func onConnect(connectionRef: TransportManagementDelegate) throws
+	func onConnect(IORef: TransportManagementDelegate) throws
 	
 ```
 
 ### onSend
 This will be called when data is to be written to an I/O instance. The input data buffer is written to the TLS connection associated with that I/O instance.
 
-
 This is both a client and server method.
-
 
 ```
 	///
@@ -247,7 +250,8 @@ This proposal:
 
 - DOES NOT describe the TLS service configuration, which includes information on certificate types, formats and chains, cipher suites, etc. We expect this to be specified in a future proposal.
 - DOES NOT describe the TLS service trust policies, which define trust and validation policies of the incoming connection. We expect this to be specified in a future proposal.
-- DOES NOT describe compatibility of the TLS service with non-Foundation based transport protocols on the Linux platform. It is possible to extend the current TLS service protocol to support other types of protocols in future proposals.
+<!-- - DOES NOT describe compatibility of the TLS service with non-Foundation based transport protocols on the Linux platform. It is possible to extend the current TLS service protocol to support other types of protocols in future proposals. -->
+- DOES NOT describe the interface between the TLS service and the transport layer and any dependencies. We expect this to be specified in a future proposal.
 
 
 ## Source compatibility
@@ -262,7 +266,7 @@ The proposed change is designed to be as non-breaking as possible, however it do
 - The long term goal for the location of the TLS service protocol is within the Foundation framework. In the short term, the protocol can live within the transport management framework.
 
 
-
+<!--
 ## Alternatives considered
 
 One of the original requirements we put on our list was making the SSL library agnostic of the transport layer mechanism. This is what SSLEngine in Java does by operating on byte streams with the idea that:
@@ -282,10 +286,13 @@ SecureTransport accepts connection instance via SSLSetConnection, where the conn
 
 We recommend using SecureTransport directly instead of via Streams because SecureTransport supports more granular TLS configuration, which is generally preferred by many Server applications. Therefore it makes sense for us not to use Streams and instead use the SecureTransport directly and thus limit transport layer options to those supported by Foundation.
 
+-->
+
+
 ## References
 
-1 - https://docs.oracle.com/javase/7/docs/api/javax/net/ssl/SSLEngine.html
+<!-- 1 - https://docs.oracle.com/javase/7/docs/api/javax/net/ssl/SSLEngine.html
 
 2 - https://developer.apple.com/reference/foundation/nsstream
-
-3 - https://web.archive.org/web/20150202200348/http://www.objectmentor.com/resources/articles/srp.pdf
+-->
+1 - https://web.archive.org/web/20150202200348/http://www.objectmentor.com/resources/articles/srp.pdf
