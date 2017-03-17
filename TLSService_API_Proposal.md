@@ -265,17 +265,22 @@ The proposed change is designed to be as non-breaking as possible, however it do
 
 ## Alternatives considered
 
-One of the original requirements we put on our list was making the SSL library be agnostic of transport layer mechanism. This is what SSLEngine in Java does by operating on byte streams with the idea that:
-"By separating the SSL/TLS abstraction from the I/O transport mechanism, the SSLEngine can be used for a wide variety of I/O types, such as non-blocking I/O (polling), selectable non-blocking I/O, Socket and the traditional Input/OutputStreams, local ByteBuffers or byte arrays, future asynchronous I/O models , and so on." [1]
+One of the original requirements we put on our list was making the SSL library agnostic of the transport layer mechanism. This is what SSLEngine in Java does by operating on byte streams with the idea that:
+
+```
+"By separating the SSL/TLS abstraction from the I/O transport mechanism, 
+the SSLEngine can be used for a wide variety of I/O types, such as 
+non-blocking I/O (polling), selectable non-blocking I/O, Socket and the 
+traditional Input/OutputStreams, local ByteBuffers or byte arrays, future 
+asynchronous I/O models , and so on." [1]
+```
+
+The Stream class in Foundation manages SSL/TLS streams implicitly via flags. [2]
 
 
-The Stream object in Foundation, manages TLS streams implicitly via flags. [2]
+SecureTransport accepts connection instance via SSLSetConnection, where the connection type is based on Foundation's CFNetwork, BSD Sockets, or Open Transport. The input connection type is an opaque pointer to the connection instance `SSLConnectionRef ` with user defined I/O callbacks for read and write, set in `SSLSetIOFuncs`.
 
-
-SecureTransport assumes some kind of connection for its input via SSLSetConnection, based on Foundation's support CFNetwork, BSD Sockets, or Open Transport.
-SecureTransport allows the app more flexibility in terms of configuration setup of the TLS connection. This level of configuration is  desired by many Server applications and therefore is preferred.
-
-So it makes sense for us not to use Streams and instead use the SecureTransport approach and limit transport layer options to those supported by Foundation.
+We recommend using SecureTransport directly instead of via Streams because SecureTransport supports more granular TLS configuration, which is generally preferred by many Server applications. Therefore it makes sense for us not to use Streams and instead use the SecureTransport directly and thus limit transport layer options to those supported by Foundation.
 
 ## References
 
