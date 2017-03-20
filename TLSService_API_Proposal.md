@@ -25,7 +25,7 @@ We propose a new model that is easily extensible and supports a plug-n-play arch
 
 At the time of writing this proposal, the Swift Server API work group has not yet defined any standards for the transport management or application layers. For our design, we have assumed a network stack that consists of:
 
-- Foundation's system transport layer (CFNetwork, BSD Sockets, or Open Transport) 
+- System transport layer  
 - Transport management
 - HTTP request management 
 - (Optional) Web server
@@ -177,7 +177,7 @@ This is both a client and server method.
 
 ```
 	///
-	/// Processing on acceptance from a listening socket
+	/// Processing on acceptance from a listening connection
 	/// 
 	///
 	/// - Parameter IORef:	The connected I/O instance
@@ -196,7 +196,7 @@ This is both a client and server method.
 
 ```
 	///
-	/// Processing on connection to a listening socket
+	/// Processing on connection to a listening connection
  	///
 	/// - Parameter connectionRef:	The connected I/O instance
 	///
