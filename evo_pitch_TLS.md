@@ -30,7 +30,7 @@ It is ideal to have the following design goals as we try to come up with a solut
 # Proposal
 
 
-The proposed solution basically defines a number of protocols that abstracts away:
+The proposed solution basically defines a number of protocols for each interface:
 - transport management
 - TLS management
 
