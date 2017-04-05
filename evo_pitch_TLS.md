@@ -43,6 +43,12 @@ The transport management protocol essentially would be a combination of an conne
 This is the connection object that gets passed to implementation of the TLS service protocol, which also handles the read and write callbacks to the connection object.
 
 The TLS service protocol would define a sets of methods that deal with TLS setup (certificates, server/client, etc), and TLS events (such as receiving data, encrypting and writing to connection object or reading from a connection object, decrypting and returning the data).
+These methods are implemented by the TLS service which in turn uses its choice an of underlying security library. As an example, the TLS service uses SecurityTransport library on Apple platform and OpenSSL on Linux. 
+
+If an application requires TLS for its use case, it creates a TLS service object and configures it based on its requirements.
+
+The application then passes the TLS service object to its lower level frameworks that deal with networking and communication. Each lower level framework maintains an optional instance variable of type TLS service protocol. If the optional variable exists, it is further passed down until it gets to the lowest level that deals with the Swift transport layer APIs (in the diagram above, this is the HTTP Management layer). When this layer creates the connection using the transport layer APIs, it assigns the TLS service object to the transport layer delegate. The Swift socket layer is then responsible for calling the TLS service protocol methods that handle the TLS functionality at the appropriate times. 
+
 
 # Source Compatibility:
 
