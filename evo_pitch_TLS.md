@@ -8,9 +8,9 @@ Our plan is to start with the main ideas presented here and work on a standard S
 
 # Problem
 
-Currently there is no standard Swift SSL/TLS library that is compatible on both Apple and Linux. Swift projects use their TLS library of choice (such as OpenSSL, LibreSSL, Security framework, etc), resulting in:
+Currently there is no standard Swift SSL/TLS library that is compatible on both Apple and Linux. Swift projects use their TLS library of choice (such as OpenSSL, LibreSSL, Security framework, etc) depending on the platform, resulting in:
 - fragmentation of the space as well as incompatibility of project dependencies if more than one security package is needed by different modules (a project cannot have  both OpenSSL and LibreSSL in its dependency graph)
-- insecurity (using an unpatched or deprectaed library such as OpenSSL on macOS)
+- insecurity (using an unpatched or deprecated library such as OpenSSL on macOS)
 - unmaintainablity (using non-standard or non-native libraries)
 - more complex code (using different APIs for each platform).
 
