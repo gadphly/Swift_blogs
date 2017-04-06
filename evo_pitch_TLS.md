@@ -4,7 +4,7 @@ I’d like to pitch some of the ideas that have been discussed in the server wor
 
 For security, we have divided the scope into SSL/TLS support and crypto support. Our first goal and the subject of this pitch is TLS. This current pitch is the result of various discussions that have taken place over the past several weeks/months and several projects by groups such as Vapor, IBM, Zewo, etc. 
 
-Our plan is to start with the main ideas presented here and work on a Swift library that we prototype and iterate on before finalizing on a specific interface. Hopefully the ideas in this pitch are non-controversial, aside from the naming of the method and protocols (which has been accepted as a `hard` problem).
+Our plan is to start with the main ideas presented here and work on a Swift library that we prototype and iterate on before finalizing on a specific interface. Hopefully the ideas in this pitch are non-controversial, aside from the naming of the method and protocols (which is widely accepted as a `hard` problem).
 
 # Problem
 
@@ -14,36 +14,37 @@ Since there is currently no standard Swift SSL/TLS library that is compatible on
 - unmaintainablity (using non-standard or non-native libraries)
 - more complex code (using different APIs for each platform).
 
-So we want to propose a standard set of protocols that define the behavior of the TLS service and how the application and the server and networking layers beneath it interact with the TLS service.
+So we want to propose a standard set of protocols that define the behavior of the TLS service and how the application and the server and networking layers beneath it interact with the TLS service. What complicates this pitch is that the Swift in server space is new and none of the interfaces have yet been defined.
 
 # Design goals
 
-It is ideal to have the following design goals as we try to come up with a solution for the above problem:
+We came up with the following design goals in our solution:
 
 - Provide a consistent and unified Swift interface so that the developer can write simple, cross-platform applications;
 - Don't implement new crypto functionality and instead use existing functions in underlying libraries;
 - Plug-n-play architecture which allows the developer to decide on underlying security library of choice, e.g., OpenSSL vs LibreSSL;
 - Library should be agnostic of the transport mechanism (e.g., socket, etc), whilst allowing for both blocking and non-blocking connections;
-- Developers should be able to use the same TLS library for both client and server applications
+- Developers should be able to use the same TLS library for both client and server applications.
 
 
 # Proposal
 
-
 The proposed solution basically defines a number of protocols for each interface:
-- transport management
+- Transport management
 - TLS management
 
 A basic diagram that shows the relationship between the proposed protocols is shown below:
 ![alt text](https://raw.githubusercontent.com/gtaban/blogs/master/TLSServiceArchitecture.png "Architecture of TLSService modules")
 
 
-The transport management protocol essentially would be a combination of an connection object (e.g., a socket pointer, a file descriptor, etc) and a connection type.
+The transport management protocol essentially would be a combination of a connection object (e.g., a socket pointer, a file descriptor, etc) and a connection type.
 
-This is the connection object that gets passed to implementation of the TLS service protocol, which also handles the read and write callbacks to the connection object.
+This is the connection object that gets passed to the implementation of the TLS service protocol, which also handles the read and write callbacks to the connection object.
 
 The TLS service protocol would define a sets of methods that deal with TLS setup (certificates, server/client, etc), and TLS events (such as receiving data, encrypting and writing to connection object or reading from a connection object, decrypting and returning the data).
-These methods are implemented by the TLS service which in turn uses its choice an of underlying security library. As an example, the TLS service uses SecurityTransport library on Apple platform and OpenSSL on Linux. 
+These methods are implemented by the TLS service which in turn uses its choice of underlying security library. As an example, the TLS service uses SecurityTransport library on Apple platform and OpenSSL on Linux. 
+
+## How this would work
 
 If an application requires TLS for its use case, it creates a TLS service object and configures it based on its requirements.
 
@@ -52,7 +53,7 @@ The application then passes the TLS service object to its lower level frameworks
 
 # Source Compatibility:
 
-What complicates this proposal is that the Swift in server space is new and none of the interfaces have yet been defined. Although the proposed protocols are designed to be as non-breaking as possible, they do place several assumptions on the rest of the transport/application stack. 
+As mentioned, the Swift in server space is still new and the interfaces are currently under discussion. Although the proposed protocols are designed to be as non-breaking as possible, they do place several assumptions on the rest of the transport/application stack. 
 
 - The application layer must import and instantiate a TLS service object which implements the TLS service protocol if it wants to enable TLS service.
 - Every framework layer above the transport management layer but below the application layer (which includes HTTP and server frameworks) has an optional object that implements the TLS service protocol. If the TLS object exists, it is passed down to each layer below.
