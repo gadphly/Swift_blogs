@@ -4,17 +4,17 @@ I’d like to pitch some of the ideas that have been discussed in the server wor
 
 For security, we have divided the scope into SSL/TLS support and crypto support. Our first goal and the subject of this pitch is TLS. This current pitch is the result of various discussions that have taken place over the past several weeks/months and several projects by groups such as Vapor, IBM, Zewo, etc. 
 
-Our plan is to start with the main ideas presented here and work on a standard Swift library that we prototype and iterate on before finalizing on a specific interface. 
+Our plan is to start with the main ideas presented here and work on a Swift library that we prototype and iterate on before finalizing on a specific interface. Hopefully the ideas in this pitch are non-controversial, aside from the naming of the method and protocols (which has been accepted as a `hard` problem).
 
 # Problem
 
-Currently there is no standard Swift SSL/TLS library that is compatible on both Apple and Linux. Swift projects use their TLS library of choice (such as OpenSSL, LibreSSL, Security framework, etc) depending on the platform, resulting in:
+Since there is currently no standard Swift SSL/TLS library that is compatible on both Apple and Linux, Swift projects use their TLS library of choice (such as OpenSSL, LibreSSL, Security framework, etc). This results in:
 - fragmentation of the space as well as incompatibility of project dependencies if more than one security package is needed by different modules (a project cannot have  both OpenSSL and LibreSSL in its dependency graph)
 - insecurity (using an unpatched or deprecated library such as OpenSSL on macOS)
 - unmaintainablity (using non-standard or non-native libraries)
 - more complex code (using different APIs for each platform).
 
-This motivates the necessity for defining a standard set of protocols that define the behavior of the TLS service and how the application and the server and networking layers beneath it interact with the TLS service.
+So we want to propose a standard set of protocols that define the behavior of the TLS service and how the application and the server and networking layers beneath it interact with the TLS service.
 
 # Design goals
 
