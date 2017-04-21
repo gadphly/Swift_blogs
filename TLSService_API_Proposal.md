@@ -105,10 +105,9 @@ Whilst using a flag or a type is convenient in languages such as `C`, it's not v
 
 ## Detailed design
 
-<!--
-### Transport management protocol
+### TransportOverlay Enum
 
-The transport management protocol describes a gettable file descriptor property that refers to an I/O resource (such as a network socket).
+<!-- The transport management protocol describes a gettable file descriptor property that refers to an I/O resource (such as a network socket).
 
 
 
@@ -119,16 +118,24 @@ public protocol TransportManagementDelegate {
 	/// The instance of the I/O resource 
 	///
   var fileDescriptor: Int32 { get }
+  
+  enum TransportThing {
+    case socket(FileDescriptor)
+}
 }
 ```
 -->
+
+enum TransportOverlay {
+    case socket(fileDescriptor: Int32)
+}
 
 ### TLS service protocol
 
 The TLS service protocol describes the methods that the transport layer calls to handle transport-level events for the TLS service object.
 
 
-#### onClientCreate
+#### didClientCreate
 This will be called when a client I/O connection is created and appropriate TLS connection needs to be configured, including context creation, the handshake and connection verification. 
 
 This is a client only method.
@@ -139,11 +146,11 @@ This is a client only method.
 	/// Setup the contexts and process the TLSService configurations (certificates, etc)
 	///
 
-	func onClientCreate() throws
+	func didClientCreate() throws
 	
 ```
 
-#### onServerCreate
+#### didServerCreate
 This will be called when a server I/O connection is created and appropriate TLS connection needs to be setup, including context creation, the handshake and connection verification. 
 
 This is a server only method.
@@ -153,11 +160,11 @@ This is a server only method.
 	/// Setup the contexts and process the TLSService configurations (certificates, etc)
 	///
 
-	func onServerCreate() throws
+	func didServerCreate() throws
 	
 ```
 
-### onDestroy
+### willDestroy
 This will be called when an I/O instance connection is closed and any remaining TLS context needs to be destroyed. 
 
 This is both a client and server method.
@@ -166,13 +173,13 @@ This is both a client and server method.
 	///
 	/// Destroy any remaining contexts 
 	///
-	func onDestroy()
+	func willDestroy()
 ```
 
-### onAccept
+### didAccept
 This will be called once an I/O instance connection has been accepted, to setup the TLS connection, do the handshake and connection verification. 
 
-This is both a client and server method.
+This is a server only method.
 
 
 ```
@@ -180,31 +187,32 @@ This is both a client and server method.
 	/// Processing on acceptance from a listening connection
 	/// 
 	///
-	/// - Parameter IORef:	The connected I/O instance
+	/// - Parameter connection:	The connected I/O instance
 	///
-	func onAccept(IORef: TransportManagementDelegate) throws
+	func didAccept(on connection: TransportOverlay) throws
 	
 ```
 
 <!-- 	func onAccept(connectionRef: TransportManagementDelegate) throws -->
-### onConnect
+
+### didConnect
 This will be called once a socket connection has been made, to setup the TLS connection, do the handshake and connection verification. 
 
 
-This is both a client and server method.
+This is a client only method.
 
 
 ```
 	///
 	/// Processing on connection to a listening connection
  	///
-	/// - Parameter connectionRef:	The connected I/O instance
+	/// - Parameter connection:	The connected I/O instance
 	///
-	func onConnect(IORef: TransportManagementDelegate) throws
+	func didConnect(on connection: TransportOverlay) throws
 	
 ```
 
-### onSend
+### willSend
 This will be called when data is to be written to an I/O instance. The input data buffer is written to the TLS connection associated with that I/O instance.
 
 This is both a client and server method.
@@ -214,16 +222,16 @@ This is both a client and server method.
 	/// Low level writer
 	///
 	/// - Parameters:
-	///		- buffer:		Buffer pointer
-	///		- bufSize:		Size of the buffer
+	///		- data:		Buffer pointer
+	///		- size:		Size of the buffer
 	///
 	///	- Returns the number of bytes written. Zero indicates TLS shutdown, less than zero indicates error.
 	///
-	func onSend(buffer: UnsafeRawPointer, bufSize: Int) throws -> Int
+	func willSend(with data: UnsafeRawPointer, of size: Int) throws -> Int
 	
 ```
 
-### onReceive
+### willReceive
 This will be called when data is to be read from an I/O instance. Encrypted data is read from TLS connection associated with that I/O instance and decrypted and written to the buffer passed in.
 
 
@@ -235,12 +243,12 @@ This is both a client and server method.
 	/// Low level reader
 	///
 	/// - Parameters:
-	///		- buffer:		Buffer pointer
-	///		- bufSize:		Size of the buffer
+	///		- data:		Buffer pointer
+	///		- size:		Size of the buffer
 	///
 	///	- Returns the number of bytes read. Zero indicates TLS shutdown, less than zero indicates error.
 	///
-	func onReceive(buffer: UnsafeMutableRawPointer, bufSize: Int) throws -> Int
+	func willReceive(with data: UnsafeRawPointer, of size: Int) throws -> Int
 	
 ```
 
@@ -250,8 +258,8 @@ This proposal:
 
 - DOES NOT describe the TLS service configuration, which includes information on certificate types, formats and chains, cipher suites, etc. We expect this to be specified in a future proposal.
 - DOES NOT describe the TLS service trust policies, which define trust and validation policies of the incoming connection. We expect this to be specified in a future proposal.
-<!-- - DOES NOT describe compatibility of the TLS service with non-Foundation based transport protocols on the Linux platform. It is possible to extend the current TLS service protocol to support other types of protocols in future proposals. -->
-- DOES NOT describe the interface between the TLS service and the transport layer and any dependencies. We expect this to be specified in a future proposal.
+<!-- - DOES NOT describe compatibility of the TLS service with non-Foundation based transport protocols on the Linux platform. It is possible to extend the current TLS service protocol to support other types of protocols in future proposals. - DOES NOT describe the interface between the TLS service and the transport layer and any dependencies. We expect this to be specified in a future proposal.
+-->
 
 
 ## Source compatibility
