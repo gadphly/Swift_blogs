@@ -1,0 +1,32 @@
+- download virtual box https://www.virtualbox.org/wiki/Downloads
+- download ubuntu image  https://www.ubuntu.com/download
+  - Find older releases here: http://releases.ubuntu.com
+- install virtual box
+- open virtual box and create new virtual machine (Type: Linux, Version Ubuntu 64b)
+  - assign 2048MB RAM and 10G (default) VDI storage
+  - once created, click on settings
+      - go to storage --> 
+      - click on Empty under Contoller: IDE
+      - click on cd next to optical drive and point to ISO image downloaded
+      - click on Live CD/DVD
+  - press OK
+  - start the VM
+  - install Ubuntu
+  - restart VM
+  - To install shared clip board:
+      - Devices --> Insert Guest Additions CD Image -->  and install
+      - Devices --> Shared Clipboard --> bidirectional
+  - To install shared folders
+      - Devices --> shared folders --> add the + and add the folders you want to share
+      - Add your account to the vboxsf user group: $ sudo usermod -G vboxsf -a myusername  
+      - Then reboot
+      - Your shared folder will appear under /media/sf_SHAREDFOLDERNAME
+- Install additional packages:
+  - $ sudo apt-get update
+  - $ sudo apt-get install clang libicu-dev libcurl4-openssl-dev libssl-dev git curl
+- Install swiftenv https://swiftenv.fuller.li/en/latest/installation.html
+  - make sure you change .bash_profile to .bashrc
+  - $ source .bashrc
+  - $ swiftenv install 3.1.1
+  - $ swiftenv version
+- If you have private repos, you will need to setup SSH keys and all that goodness again
