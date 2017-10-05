@@ -9,11 +9,13 @@ The problem here is that a CA-signed cert can't be ordered for localhost (https:
 
 ## Overview
 1 - a real domain name should point to localhost
+
 2 - create a cert for the domain name.
 
 ## Step by Step
 
 1 - buy a cheap domain name. I bought one at GoDaddy (`gelareh.com`)
+
 2 - Update DNS of your domain to point to localhost:
   - go to DNS management of your Domain manager
   - add an A record: _host_ can be a subdomain, say `ssl` which would really mean `ssl.gelareh.com` and _Points to_ 
