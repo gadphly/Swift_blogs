@@ -25,7 +25,7 @@ The problem here is that a CA-signed cert can't be ordered for localhost (https:
 
 3 - Go to https://zerossl.com/free-ssl/#crt which uses Let's Encrypt under the covers.
  - _Details_ page: Add sub domain: `ssl.gelareh.com`. Check DNS verification and the TOS and SA. Press Next. Don't include www-prefix.
- - Generating CSR. Copy it. Press Next.
+ - Generating CSR. Copy it. Press Next. 
  - Generating account key. This is the private key for the Let's Encrypt account and will allow you to later re-generate certs whent they expire. Copy it.
  - A pop up should say OK now the key is registered.
  - _Verification_ page: go back to DNS management page of your Domain manager. Create a TXT record for `_acme-challenge.ssl` and the value they give. 
@@ -37,3 +37,7 @@ The problem here is that a CA-signed cert can't be ordered for localhost (https:
  - the cert you get is both the site's cert and the intermediate Let'sEncrypt cert.
  - divide up the file into two files: cert and intermediate
  - `openssl verify -CAfile /usr/local/etc/openssl/cert.pem -untrusted Intermediate.pem UserCert.pem` which uses the system's CA file to verify Let's Encrypt's cert's root singature.
+ 
+ ## Some extra tricks
+ 
+ - Multi-domain certs are possible. To do it, when creating the CSR, just add multiple domain with space separating them. You can verify the CSR using `openssl req -in csr -noout -text`
