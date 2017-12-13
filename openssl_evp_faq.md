@@ -8,7 +8,7 @@ Uses a public key algorithm.
 Uses EVP_PKEY_CTX
 
 - EVP_PKEY_encrypt / decrypt
-- EVP_PKEY_sign / verify: Does not hash data to be signed, so normally uses to sign digests. For normal signing, use EVP_DigestSign
+- EVP_PKEY_sign / verify: Does not hash data to be signed, so normally uses to sign digests. For normal signing, use EVP_DigestSign. https://wiki.openssl.org/index.php/Manual:EVP_PKEY_sign(3)
 - EVP_PKEY_keygen
 
 ## EVP_*
