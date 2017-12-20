@@ -18,3 +18,4 @@ Uses EVP_CIPHER_CTX
 - EVP_Sign / Verify: Older APIs for sign/verify. Used for both HMAC and RSA
 - EVP_Seal / Open: RSA+AES encryption
 - EVP_DigestSign / DigestVerify: New APIs for sign/verify
+- EVP_Digest: APIs used for hashing, example: https://www.openssl.org/docs/man1.0.2/crypto/EVP_DigestInit_ex.html
